@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+MAX_JOBS="16"
+
 if [ ! -d src ]; then
     echo "You must run this script in the root directory (i.e. ./tools/clang-tidy.all.sh)"
     exit 1
@@ -10,7 +12,7 @@ if [ ! -f compile_commands.json ]; then
     exit 1
 fi
 
-echo "$@"
+mkdir -p reports
 
-find src/ \( -iname "*.hpp" -o -iname "*.cpp" \) -print -exec clang-tidy {} \;
-# find tests/src/ \( -iname "*.hpp" -o -iname "*.cpp" \) -exec clang-format -i {} \;
+time find src/ \( -iname "*.hpp" -o -iname "*.cpp" \) -print0 | xargs --max-args 1 --null --max-procs="$MAX_JOBS" clang-tidy "$@" | tee reports/clang-tidy-src.txt
+time find tests/src/ \( -iname "*.hpp" -o -iname "*.cpp" \) -print0 | xargs --max-args 1 --null --max-procs="$MAX_JOBS" clang-tidy "$@" | tee reports/clang-tidy-tests-src.txt
