@@ -3,7 +3,7 @@
 namespace chatterino {
 
 ChannelLog::ChannelLog(QString channelName)
-    : channelName_(std::move(channelName))
+    : channelName_(std::move(channelName.toLower()))
 {
 }
 
